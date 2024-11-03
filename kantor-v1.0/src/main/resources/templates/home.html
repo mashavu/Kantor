@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Kantor wymiany walut</title>
+    <style type="text/css">
+        label, input[type=text], select {
+            display: inline-block;
+            width: 80px;
+            margin: 5px;
+            position: relative;
+        }
+        select {
+            width: 150px;
+        }
+        button {
+            margin: 10px;
+        }
+        .error-select {
+            border: 1px solid red;
+        }
+    </style>
+    <script>
+        function validateInputs() {
+            const input1 = document.getElementById("input1");
+            const input2 = document.getElementById("input2");
+
+            input1.addEventListener('input', function() {
+                if (input1.value.length > 0) {
+                    input2.value = '';
+                    input2.disabled = true;
+                } else {
+                    input2.disabled = false;
+                }
+            });
+
+            input2.addEventListener('input', function() {
+                if (input2.value.length > 0) {
+                    input1.value = '';
+                    input1.disabled = true;
+                } else {
+                    input1.disabled = false;
+                }
+            });
+
+            input1.addEventListener('focus', function() {
+                input1.value = '';
+            });
+
+            input2.addEventListener('focus', function() {
+                input2.value = '';
+            });
+        }
+    </script>
+</head>
+<body onload="validateInputs()">
+<div align="center">
+    <img th:src="@{/images/kantor.jpg}" alt="Kantor wymiany walut" width="345"/>
+    <form th:action="@{/exchangeOrder}" method="post" th:object="${exchangeOrder}">
+        <label>Mam:</label>
+        <input type="text" th:field="*{inputAmount}" id="input1" name="input1"/>
+        <select th:field="*{currencyInputType}" th:classappend="${#fields.hasErrors('currencyInputType')} ? 'error-select'">
+            <option th:each="c : ${currencyTypeList}" th:value="${c}" th:text="${c}"/>
+        </select>
+        <br/>
+
+        <label>Otrzymam:</label>
+        <input type="text" th:field="*{outputAmount}" id="input2" name="input2"/>
+        <select th:field="*{currencyOutputType}" th:classappend="${#fields.hasErrors('currencyOutputType')} ? 'error-select'">
+            <option th:each="c : ${currencyTypeList}" th:value="${c}" th:text="${c}"/>
+        </select>
+        <br/>
+
+        <button type="submit">Oblicz</button>
+    </form>
+    <div th:if="${result}">
+        <p><span th:text="${result}"></span></p>
+    </div>
+</div>
+</body>
+</html>
